@@ -17,8 +17,8 @@ export const registerAccount = async (req, res) => {
 // Controller untk mendapatkan semua data user
 export const getAllUser = async (_req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM user");
-    res.json(result.rows);
+    const result = await pool.query("SELECT * FROM users");
+    res.status(200).json(result.rows);
   } catch (error) {
     res.status(500).json({ msg: error.message });
   }
