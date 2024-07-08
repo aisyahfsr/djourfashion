@@ -122,20 +122,41 @@ productData.forEach((product) => {
         <div class="price">
             <h4>${product.name}</h4>
             <p>Rp ${product.price}</p>
-            <button class="btn-co" onclick="redirectToCheckout('${product.id}')">Buy</button>
+            <button class="btn-co" onclick="addToCart('${product.id}')">Add To Cart</button>
         </div>
     `;
 
   parentProduct.appendChild(productCard);
 });
 
-//API untuk memanggil nama dan price di Form CO
-function redirectToCheckout(productId) {
-  console.log("redirect to checkout");
-  console.log(productId);
-
+async function addToCart(productId) {
   const product = productData.filter((product) => product.id === productId);
-  console.log("redirect to checkout");
-  localStorage.setItem("productData", JSON.stringify(product[0]));
-  window.location.href = "Layout%20Checkout.HTML";
+  const userLogin = JSON.parse(localStorage.getItem("user"));
+  try {
+    const response = await fetch("http://localhost:3000/api/cart/add-to-cart", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id_user: userLogin.id,
+        product_name: product[0].name,
+        price: product[0].price,
+        quantity: 1,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.json();
+      throw new Error(
+        errorMessage.error || "Gagal memasukan produk kedalam keranjang."
+      );
+    }
+
+    const res = await response.json();
+    alert(res);
+  } catch (error) {
+    console.error("Error:", error.message);
+    alert("Gagal memasukan produk kedalam keranjang.");
+  }
 }
