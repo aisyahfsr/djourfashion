@@ -21,8 +21,8 @@ async function postRegFormData(event) {
     }
 
     const data = await response.json();
-    console.log(data); // Di sini Anda bisa mengelola respons dari server
     alert("Login berhasil!");
+    localStorage.setItem("user", JSON.stringify(data.user));
     window.location.href = "index.html";
   } catch (error) {
     console.error("Error:", error.message);
