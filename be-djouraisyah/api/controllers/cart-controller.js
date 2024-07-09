@@ -1,7 +1,6 @@
 import { pool } from "../config/db.js";
 
-// Controller untuk mendapatkan data keranjang berdasarkan id customer
-export const getCartByIdCustomer = async (req, res) => {
+export const getCartByIdUser = async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT * FROM carts WHERE id_user = ${req.params.id}`
@@ -26,7 +25,6 @@ export const addToCart = async (req, res) => {
   }
 };
 
-// Controller untuk mengubah data keranjang berdasarkan id
 export const updateCart = async (req, res) => {
   try {
     await pool.query(
