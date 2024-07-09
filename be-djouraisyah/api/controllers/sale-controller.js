@@ -14,7 +14,7 @@ export const addSales = async (req, res) => {
       const { id, id_user, product_name, price, quantity } = sale;
       await pool.query(
         `INSERT INTO sales 
-        (id_user, product_name, price, quantity,name,
+        (id_user, product_name, price, quantity, name,
         phone_number, address, payment_method, shipping_method)
         VALUES (${id_user}, '${product_name}', 
         ${price}, ${quantity}, '${name}', '${phone_number}', 
