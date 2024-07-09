@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     let cartItems = await response.json();
-    console.log(cartItems);
 
     if (cartItems.length === 0) {
       checkoutButton.style.display = "none";
@@ -156,14 +155,24 @@ document.addEventListener("DOMContentLoaded", async () => {
       const payment_method = document.querySelector(".input-payment").value;
       const shipping_method = document.querySelector(".input-shipping").value;
 
-      // console.log({
-      //   sales: cartItems,
-      //   name,
-      //   phone_number,
-      //   address,
-      //   payment_method,
-      //   shipping_method,
-      // });
+      const data = await fetch(
+        `http://localhost:3000/api/cart/get-cart/${userLogin.id}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch cart data");
+      }
+
+      let dataCheckout = await data.json();
+
+      printOrder(
+        dataCheckout,
+        name,
+        phone_number,
+        address,
+        payment_method,
+        shipping_method
+      );
+
       try {
         const response = await fetch(
           `http://localhost:3000/api/sale/checkout`,
@@ -182,6 +191,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }),
           }
         );
+
         if (!response.ok) {
           throw new Error("Failed to update cart item quantity");
         }
@@ -201,6 +211,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     async function updateCartQuantity(itemId, quantity) {
+      console.log(cartItems);
       try {
         const response = await fetch(
           `http://localhost:3000/api/cart/update-quantity/${itemId}`,
@@ -248,6 +259,95 @@ document.addEventListener("DOMContentLoaded", async () => {
         "total-amount"
       ).textContent = `Rp${total.toLocaleString()}`;
       totalPurchase.textContent = `Rp${total.toLocaleString()}`;
+    }
+
+    function printOrder(
+      cartItems,
+      name,
+      address,
+      paymentMethod,
+      shippingMethod
+    ) {
+      // HTML untuk konten PDF
+      const pdfContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <title>Order Confirmation</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 20px;
+        }
+        h1 {
+          text-align: center;
+        }
+        .order-details {
+          margin-bottom: 20px;
+        }
+        .order-details p {
+          margin: 5px 0;
+        }
+        .order-details ul {
+          list-style-type: none;
+          padding: 0;
+        }
+        .order-details ul li {
+          margin-bottom: 5px;
+        }
+        .footer {
+          position: fixed;
+          bottom: 20px;
+          left: 20px;
+          right: 20px;
+          text-align: center;
+          font-size: 12px;
+        }
+      </style>
+    </head>
+    <body>
+      <h1>Order Confirmation</h1>
+      <div class="order-details">
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Address:</strong> ${address}</p>
+        <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+        <p><strong>Shipping Method:</strong> ${shippingMethod}</p>
+
+        <p><strong>Items:</strong></p>
+        <ul>
+          ${cartItems
+            .map(
+              (item) => `
+            <li>${item.product_name} - ${item.quantity} x Rp${(
+                item.price * item.quantity
+              ).toLocaleString()}</li>
+          `
+            )
+            .join("")}
+        </ul>
+        <p><strong>Total:</strong> Rp${total.toLocaleString()}</p>
+      </div>
+      <div class="footer">
+        <p>This is a computer-generated document. No signature is required.</p>
+      </div>
+    </body>
+    </html>
+  `;
+
+      // Membuka jendela baru untuk menampilkan dokumen
+      const win = window.open("", "_blank");
+      win.document.write(pdfContent); // Menulis HTML ke jendela baru
+      win.document.close(); // Menutup penulisan dokumen
+
+      // Memanggil fungsi print pada dokumen baru
+      win.print();
+
+      // Mengatur timeout untuk menutup jendela print setelah pencetakan selesai
+      setTimeout(() => {
+        win.close();
+        window.location.href = "index.html";
+      }, 1000);
     }
   } catch (error) {
     console.error("Error:", error);
