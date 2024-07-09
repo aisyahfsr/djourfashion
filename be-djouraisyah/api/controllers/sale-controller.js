@@ -28,3 +28,14 @@ export const addSales = async (req, res) => {
     res.status(500).json({ msg: error.message });
   }
 };
+
+export const getSalesByIdIUser = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT * FROM sales WHERE id_user = ${req.params.id}`
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+};
