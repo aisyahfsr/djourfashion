@@ -9,8 +9,12 @@
 
 /* styles.css */
 body {
-  font-family: Arial, sans-serif;
-  margin: 20px;
+    min-height: 100vh;
+    background: url(../Image/login/bg-login.png) no-repeat;
+    background-size: cover;
+    background-position: center;
+    margin: 32px;
+}
 }
 
 h2 {
@@ -25,6 +29,7 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
+  background-color: white;
 }
 
 th {
